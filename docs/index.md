@@ -87,7 +87,7 @@ Utilice los siguientes enlaces para explorar detalladamente el desarrollo técni
 🗺️ [**Módulo 3: Recomendación de Destinos**](recomendacion.md)  
 * *Desarrollo de algoritmos de recomendación híbridos y análisis de efectividad de las sugerencias de viaje.*
 
-🌐 [**Herramienta e Interfaz Web**](herramienta-web.md)  
+🌐 [**Herramienta e Interfaz Web**](sitio-web.md)  
 * *Diseño, funcionalidades de carga de archivos e interacción con los tres módulos predictivos en el aplicativo web.*
 
 <br>

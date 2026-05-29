@@ -45,7 +45,7 @@ De acuerdo con el entorno de desarrollo, el proyecto está estructurado de la si
  ┃ ┣ 📂 modulo2                    # Gráficos y modelos exportados de Conducción Distractiva
  ┃ ┗ 📂 modulo3                    # Gráficos y modelos exportados del Recomendador de Destinos
  ┣ 📜 Modulo1_Prediccion.ipynb     # Notebook de desarrollo del Módulo 1 (Series de Tiempo)
- ┣ 📜 Modulo2_Clasificacion.ipynb   # Notebook de desarrollo del Módulo 2 (CNN / Transfer Learning)
+ ┣ 📜 Modulo2_Clasificacion.ipynb  # Notebook de desarrollo del Módulo 2 (CNN / Transfer Learning)
  ┣ 📜 Modulo3_Recomendacion.ipynb  # Notebook de desarrollo del Módulo 3 (Neural CF Híbrido)
  ┗ 📜 README.md                    # Descripción general del repositorio
 ```
@@ -55,8 +55,7 @@ De acuerdo con el entorno de desarrollo, el proyecto está estructurado de la si
 Para interactuar directamente con los tres modelos integrados (proyectar la demanda de rutas de taxi, subir imágenes para detectar la atención de un conductor o probar el motor de recomendaciones personalizado), accede a nuestra herramienta web:
 
 <div align="center">
-  <a href="https://smartrouteapp-gold-book.reflex.run/" target="_blank">
-    <img src="https://img.shields.io/badge/Reflex-Visitar_Sitio_Web-5E56E7?style=for-the-badge&logo=python&logoColor=white" alt="Visitar Sitio Web">
+  <a href="https://tomasacevedoroldan-smartrouteapp.hf.space" target="_blank">
+    <img src="https://img.shields.io/badge/Hugging_Face-Visitar_Sitio_Web-FFD21E?style=for-the-badge&logo=huggingface&logoColor=black" alt="Visitar Sitio Web">
   </a>
 </div>
-```

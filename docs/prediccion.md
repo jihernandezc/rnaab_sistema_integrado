@@ -6,7 +6,7 @@
   <a href="prediccion.html" style="text-decoration: none;">📈 <b>Predicción</b></a> |
   <a href="clasificacion.html" style="text-decoration: none;">📸 <b>Clasificación</b></a> | 
   <a href="recomendacion.html" style="text-decoration: none;">🗺️ <b>Recomendación</b></a> | 
-  <a href="herramienta-web.html" style="text-decoration: none;">🌐 <b>Sitio Web</b></a>
+  <a href="sitio-web.html" style="text-decoration: none;">🌐 <b>Sitio Web</b></a>
 </div>
 
 <br>

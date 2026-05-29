@@ -15,12 +15,14 @@
 
 Para facilitar el acceso a nuestras soluciones de inteligencia artificial aplicada al transporte, hemos desarrollado **SmartRouteApp**, una plataforma web interactiva. Esta herramienta permite a los planificadores logísticos y operadores visualizar en tiempo real las proyecciones de demanda, las clasificaciones de conducción y las recomendaciones de rutas optimizadas.
 
+En el siguiente video se encuentra la explicación del funcionamiento de cada módulo, pruebas realizadas en la herramienta web, y el deatlle de las contribuciones individuales de cada integrante del equipo:
+
 <div align="center">
 <iframe 
   width="560" 
   height="315" 
-  src="https://www.youtube.com/embed/iHfpLri8KlQ" 
-  title="Video Promocional del Proyecto" 
+  src="https://youtu.be/fS9JGjOkpw4" 
+  title="Video del Proyecto" 
   frameborder="0" 
   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
   allowfullscreen>
@@ -31,12 +33,12 @@ Para facilitar el acceso a nuestras soluciones de inteligencia artificial aplica
 
 <br>
 
-Accede a la interfaz de usuario en producción a través del siguiente enlace:
+Accede al sitio web para probar las funcionalidades de cada módulo:
 
 <div align="center">
-    <a href="https://smartrouteapp-gold-book.reflex.run/" target="_blank">
-      <img src="https://img.shields.io/badge/Reflex-Visitar_SmartRouteApp-5E56E7?style=for-the-badge&logo=python&logoColor=white" alt="Visitar Sitio Web">
-    </a>
+  <a href="https://tomasacevedoroldan-smartrouteapp.hf.space" target="_blank">
+    <img src="https://img.shields.io/badge/Hugging_Face-Visitar_Sitio_Web-FFD21E?style=for-the-badge&logo=huggingface&logoColor=black" alt="Visitar Sitio Web">
+  </a>
 </div>
 
 <br>

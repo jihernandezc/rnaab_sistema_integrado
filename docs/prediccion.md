@@ -459,7 +459,10 @@ Sin embargo, se debe monitorear continuamente el desempeño del modelo en produc
 
 ## 10. Bibliografía
 
-*   **Chen, T., & Guestrin, C. (2016).** XGBoost: A scalable tree boosting system. *Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining*, 785–794.
-*   **Hyndman, R. J., & Athanasopoulos, G. (2021).** *Forecasting: principles and practice*. OTexts.
-*   **NYC Taxi & Limousine Commission (2025).** *TLC Trip Record Data*. Recuperado de https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page
-*   **Box, G. E., Jenkins, G. M., Reinsel, G. C., & Ljung, G. M. (2015).** *Time series analysis: forecasting and control*. John Wiley & Sons.
+Chakraborty, S. (2023). Demand Prediction for Public Transport in Nairobi (GitHub Repository). Recuperado de https://github.com/samchak18/Demand-Prediction-for-Public-Transport-in-Nairobi
+
+Chen, T., & Guestrin, C. (2016). XGBoost: A scalable tree boosting system. Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining, 785–794.
+
+GeeksforGeeks (2025). Machine Learning: Transport Demand Prediction using Regression. Recuperado de https://www.geeksforgeeks.org/machine-learning/transport-demand-prediction-using-regression/
+
+NYC Taxi & Limousine Commission (2025). TLC Trip Record Data. Recuperado de https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page

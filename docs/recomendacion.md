@@ -329,7 +329,4 @@ Como el dataset actual es estático y no existe un entorno en producción, se pr
 
 ## 8. Bibliografía
 
-- **He, X., Liao, L., Zhang, H., Nie, L., Hu, X., & Chua, T. S. (2017).** Neural Collaborative Filtering. *Proceedings of the 26th International Conference on World Wide Web (WWW '17)*, 173–182.
-- **Ricci, F., Rokach, L., & Shapira, B. (2015).** *Recommender Systems Handbook* (2nd ed.). Springer.
-- **Koren, Y., Bell, R., & Volinsky, C. (2009).** Matrix factorization techniques for recommender systems. *Computer*, 42(8), 30–37.
-- **Paszke, A., et al. (2019).** PyTorch: An Imperative Style, High-Performance Deep Learning Library. *Advances in Neural Information Processing Systems*, 32.
+Mehra, A. (2024). Travel Recommendation Dataset. Recuperado de https://www.kaggle.com/datasets/amanmehra23/travel-recommendation-dataset/data

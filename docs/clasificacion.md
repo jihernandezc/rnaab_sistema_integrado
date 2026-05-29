@@ -192,7 +192,6 @@ La innovación metodológica de este módulo radica en el uso integrado de metad
 
 ## 7. Bibliografía
 
-*   **Afridi, A. S. (2024).** *Multi-Class Driver Behavior Image Dataset*. Recuperado de Kaggle: https://www.kaggle.com/datasets/arafatsahinafridi/multi-class-driver-behavior-image-dataset/data
-*   **Sandler, M., Howard, A., Zhu, M., Zhmoginov, A., & Chen, L. C. (2018).** MobileNetV2: Inverted residuals and linear bottlenecks. *Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR)*, 4510-4520.
-*   **Shorten, C., & Khoshgoftaar, T. M. (2019).** A survey on Image Data Augmentation for Deep Learning. *Journal of Big Data*, 6(1), 1-48.
-*   **Wang, G., Li, W., Aertsen, M., Deprest, J., Ourselin, S., & Vercauteren, T. (2019).** Aleatoric uncertainty estimation with test-time data augmentation for medical image segmentation. *International Conference on Information Processing in Medical Imaging*, 551-563.
+Afridi, A. S. (2024). Multi-Class Driver Behavior Image Dataset. Recuperado de Kaggle: https://www.kaggle.com/datasets/arafatsahinafridi/multi-class-driver-behavior-image-dataset/data
+
+Sandler, M., Howard, A., Zhu, M., Zhmoginov, A., & Chen, L. C. (2018). MobileNetV2: Inverted residuals and linear bottlenecks. Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR), 4510-4520.

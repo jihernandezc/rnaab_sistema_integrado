@@ -55,9 +55,8 @@ De acuerdo con el entorno de desarrollo, el proyecto está estructurado de la si
 Para interactuar directamente con los tres modelos integrados (proyectar la demanda de rutas de taxi, subir imágenes para detectar la atención de un conductor o probar el motor de recomendaciones personalizado), accede a nuestra herramienta web:
 
 <div align="center">
-  
-  <a href="https://jihernandezc-rnaab-sistema-integrado.streamlit.app/" target="_blank">
-    <img src="https://img.shields.io/badge/Streamlit-Visitar_Sitio_Web-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white" alt="Visitar Sitio Web">
+  <a href="https://smartrouteapp-gold-book.reflex.run/" target="_blank">
+    <img src="https://img.shields.io/badge/Reflex-Visitar_Sitio_Web-5E56E7?style=for-the-badge&logo=python&logoColor=white" alt="Visitar Sitio Web">
   </a>
 </div>
 ```

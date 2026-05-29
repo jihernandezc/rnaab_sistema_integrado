@@ -3,9 +3,9 @@
 
 <div style="position: sticky; top: 0; background-color: white; padding: 10px 0; border-bottom: 1px solid #ddd; z-index: 999; text-align: center; width: 100%;">
   <a href="index.html" style="text-decoration: none;">🏠 <b>Inicio</b></a> | 
-  <a href="prediccion.html" style="text-decoration: none;">📈 <b>Predicción</b></a> |
-  <a href="clasificacion.html" style="text-decoration: none;">📸 <b>Clasificación</b></a> | 
-  <a href="recomendacion.html" style="text-decoration: none;">🗺️ <b>Recomendación</b></a> | 
+  <a href="modulo1-prediccion.html" style="text-decoration: none;">📈 <b>Predicción</b></a> |
+  <a href="modulo2-clasificacion.html" style="text-decoration: none;">📸 <b>Clasificación</b></a> | 
+  <a href="modulo3-recomendacion.html" style="text-decoration: none;">🗺️ <b>Recomendación</b></a> | 
   <a href="herramienta-web.html" style="text-decoration: none;">🌐 <b>Sitio Web</b></a>
 </div>
 
@@ -13,36 +13,38 @@
 
 # Sitio Web Interactivo y Video Promocional
 
-Para facilitar el uso de nuestro modelo de riesgo crediticio, desarrollamos un sitio web interactivo que permite a los usuarios ingresar sus datos financieros y recibir una evaluación personalizada de su riesgo crediticio. Además, creamos un video promocional que resume el proyecto y destaca su relevancia en el sector financiero.
+Para facilitar el acceso a nuestras soluciones de inteligencia artificial aplicada al transporte, hemos desarrollado **SmartRouteApp**, una plataforma web interactiva. Esta herramienta permite a los planificadores logísticos y operadores visualizar en tiempo real las proyecciones de demanda, las clasificaciones de conducción y las recomendaciones de rutas optimizadas.
 
+<div align="center">
 <iframe 
   width="560" 
   height="315" 
   src="https://www.youtube.com/embed/iHfpLri8KlQ" 
-  title="Video Promocional y Contribuciones" 
+  title="Video Promocional del Proyecto" 
   frameborder="0" 
   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
   allowfullscreen>
 </iframe>
-
-<div align="center">
-Video Promocional y Contribuciones individuales
+<br>
+<em>Video: SmartRouteApp - Optimización inteligente del transporte urbano</em>
 </div>
-
-Accede al sitio web a través del siguiente enlace:
-
-<div align="center">
-
-  <a href="https://credit-risk-unal.streamlit.app/" target="_blank">
-    <img src="https://img.shields.io/badge/Streamlit-Visitar_Sitio_Web-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white" alt="Visitar Sitio Web">
-  </a>
-</div>
-
-El repositorio de la página web se encuentra en el siguiente enlace:
 
 <br>
+
+Accede a la interfaz de usuario en producción a través del siguiente enlace:
+
 <div align="center">
-  <a href="https://github.com/tacevedooo/credit-risk-app.git" target="_blank">
+    <a href="https://smartrouteapp-gold-book.reflex.run/" target="_blank">
+      <img src="https://img.shields.io/badge/Reflex-Visitar_SmartRouteApp-5E56E7?style=for-the-badge&logo=python&logoColor=white" alt="Visitar Sitio Web">
+    </a>
+</div>
+
+<br>
+
+El código fuente y la documentación técnica de la plataforma se encuentran disponibles en nuestro repositorio:
+
+<div align="center">
+  <a href="https://github.com/tacevedooo/SmartRouteApp" target="_blank">
     <img src="https://img.shields.io/badge/GitHub-Ver_Repositorio_Oficial-181717?style=for-the-badge&logo=github" alt="Ver en GitHub">
   </a>
 </div>

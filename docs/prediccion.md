@@ -3,9 +3,9 @@
 
 <div style="position: sticky; top: 0; background-color: white; padding: 10px 0; border-bottom: 1px solid #ddd; z-index: 999; text-align: center; width: 100%;">
   <a href="index.html" style="text-decoration: none;">🏠 <b>Inicio</b></a> | 
-  <a href="prediccion.html" style="text-decoration: none;">📈 <b>Módulo 1: Demanda</b></a> |
-  <a href="clasificacion.html" style="text-decoration: none;">📸 <b>Módulo 2: Conducción</b></a> | 
-  <a href="recomendacion.html" style="text-decoration: none;">🗺️ <b>Módulo 3: Recomendación</b></a> | 
+  <a href="prediccion.html" style="text-decoration: none;">📈 <b>Predicción</b></a> |
+  <a href="clasificacion.html" style="text-decoration: none;">📸 <b>Clasificación</b></a> | 
+  <a href="recomendacion.html" style="text-decoration: none;">🗺️ <b>Recomendación</b></a> | 
   <a href="herramienta-web.html" style="text-decoration: none;">🌐 <b>Sitio Web</b></a>
 </div>
 
@@ -20,19 +20,17 @@ La demanda de transporte es un factor crítico para la planificación y operaci�
 En este proyecto se desarrolla un modelo utilizando el conjunto de datos históricos [*NYC TLC Trip Record Data*](https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page) para predecir la demanda de transporte (cantidad diaria de viajes) en las 20 rutas origen–destino más frecuentes de la ciudad durante los próximos 30 días.
 
 
-
 ## 1. Entendimiento del Dataset
 
 ### Estructura del Dataset
 
-El conjunto de datos utilizado comprende el registro histórico diario de viajes en taxi amarillo de Nueva York durante el período 2023–2025 (3 años). Los datos se descargan mensualmente en formato `.parquet` directamente desde la fuente oficial NYC TLC. Las variables principales se detallan en la Tabla 1:
+El conjunto de datos utilizado comprende el registro histórico diario de viajes en taxi amarillo de Nueva York durante el período 2023–2025 (3 años). Las variables principales se detallan en la Tabla 1:
 
 <div align="center" markdown="1">
 
 *Tabla 1. Diccionario de variables del módulo de predicción de demanda*
 
 | Nombre de Variable | Tipo de Dato | Descripción |
-| : | :: | : |
 | `pickup_date` | Temporal | Fecha del registro diario (AAAA-MM-DD). |
 | `PULocationID` | Numérico (Entero) | Identificador de la zona de origen del viaje. |
 | `DOLocationID` | Numérico (Entero) | Identificador de la zona de destino del viaje. |
@@ -49,13 +47,13 @@ El dataset consolidado abarca **9,407,598 registros** diarios de demanda agregad
 Para preparar la serie de tiempo antes de alimentar al modelo, se implementó un pipeline de transformación que garantiza series continuas, variables temporales enriquecidas y estadísticos rezagados sin fuga de información entre rutas.
 
 **1. Reindexación Continua:**  
-Cada ruta se reindexó sobre el rango de fechas completo (2023-01-01 a 2025-12-31) para evitar discontinuidades. Los días sin registros se imputaron con cero viajes.
+Cada ruta se reindexó sobre el rango de fechas completo (2023-01-01 a 2025-12-31) con el fin de asegurar una temporalidad homogénea. Esto es indispensable porque los modelos basados en rezagos asumen un paso del tiempo constante ($$\Delta t = 1$$ día); de no hacerlo, la red asumiría una continuidad falsa entre días no consecutivos. Los días sin registros se imputaron con cero viajes para representar de manera realista la ausencia de actividad operativa, evitando sesgar al alza los promedios históricos en periodos de inactividad.
 
 **2. Variables de Calendario:**  
-Se extrajeron variables cíclicas a partir de la fecha: día de semana (`dow`), mes, semana del año, día del año, indicador de fin de semana (`is_weekend`) e indicador de festivo nacional de Nueva York (`is_holiday`), usando la librería `holidays`.
+Se extrajeron variables cíclicas a partir de la fecha: día de la semana (`dow`), mes, semana del año, día del año, indicador de fin de semana (`is_weekend`) e indicador de festivo nacional de Nueva York (`is_holiday`), usando la librería `holidays`. La justificación detrás de este enriquecimiento radica en que la movilidad urbana responde directamente a rutinas humanas e institucionales; al proveer estas variables exógenas como señales directas de contexto, el modelo puede identificar caídas predecibles en días festivos y fines de semana o incrementos en meses de alta estacionalidad sin tener que deducirlos únicamente a partir de la secuencia numérica.
 
 **3. Lags y Rolling Statistics:**  
-Para habilitar el aprendizaje supervisado, se calcularon rezagos temporales y estadísticos de ventana deslizante, siempre encapsulados por grupo de ruta para evitar mezcla entre series:
+Para habilitar el aprendizaje supervisado en algoritmos que no poseen una estructura de memoria interna secuencial inherente, se calcularon rezagos temporales y estadísticos de ventana deslizante. Estas transformaciones convierten la serie de tiempo en un formato tabular compatible con el modelo, proporcionándole memoria de corto plazo (el comportamiento de ayer) y de largo plazo (tendencias semanales y mensuales). El cálculo se encapsuló estrictamente por grupo de ruta para evitar que las dinámicas de movilidad de una zona geográfica se mezclaran con las de otra, previniendo distorsiones en el entrenamiento:
 
 <div align="center" markdown="1">
 
@@ -72,7 +70,7 @@ $$\bar{y}_{t,w} = \frac{1}{w}\sum_{i=1}^{w} y_{t-i}, \quad w \in \{7, 14, 30\}$$
 </div>
 
 **4. Normalización Z-Score por Ruta:**  
-Para eliminar la escala diferencial entre rutas de alto y bajo volumen, se aplicó una normalización estándar calculada exclusivamente sobre el conjunto de entrenamiento:
+Para eliminar la escala diferencial entre rutas de alto volumen (que pueden registrar miles de viajes diarios) y de bajo volumen, se aplicó una normalización estándar calculada exclusivamente sobre el conjunto de entrenamiento:
 
 <div align="center" markdown="1">
 
@@ -81,8 +79,10 @@ $$y_t^* = \frac{y_t - \mu_{train}}{\sigma_{train}}$$
 *Ecuación 3. Normalización z-score libre de fuga de datos*
 </div>
 
+Este escalado es crítico para evitar que las rutas con mayor densidad dominen el cálculo del gradiente de la función de pérdida durante la optimización. Además, el uso estricto de la media ($$\mu$$) y desviación estándar ($$\sigma$$) del set de entrenamiento garantiza que no exista fuga de información de los datos futuros del set de prueba hacia la fase de aprendizaje.
+
 **5. Codificación One-Hot de Rutas:**  
-Las combinaciones origen–destino se codificaron mediante One-Hot Encoding (`route_id_str`) para permitir que un único modelo global diferencie el comportamiento de cada ruta.
+Las combinaciones origen–destino se codificaron mediante One-Hot Encoding (`route_id_str`). Este paso es fundamental para poder entrenar un **único modelo global consolidado** en lugar de 20 modelos individuales independientes. La codificación binaria le permite al algoritmo diferenciar geográficamente qué ruta específica está evaluando y ajustar el sesgo de la predicción según la zona, mientras se beneficia del aprendizaje compartido de los patrones temporales comunes de toda la ciudad de Nueva York.
 
 ## 3. Análisis de Estacionalidad y Tendencias
 
@@ -112,13 +112,15 @@ El comportamiento cíclico se desglosó por día de la semana y mes del año, pe
 </div>
 
 El análisis descriptivo de la **Figura 2** revela la estructura subyacente de la demanda de movilidad:
-1.  **Estacionalidad Semanal (Día de la semana):** Los viajes diarios promedian su máximo volumen a mitad de semana (Miércoles con $392$ viajes y Jueves con $389$), descendiendo significativamente durante los fines de semana hasta alcanzar su punto mínimo los domingos ($210$ viajes de promedio). Esto sugiere un perfil de movilidad fuertemente corporativo y asociado a jornadas laborales de oficina.
-2.  **Estacionalidad Mensual (Mes):** Mayo, Octubre, Noviembre y Diciembre representan los periodos más productivos del año (superando los $365$ viajes promedio diarios), mientras que Julio y Agosto reflejan valles de baja afluencia por debajo de los $250$ viajes.
+1.  **Estacionalidad Semanal (Día de la semana):** Los viajes diarios promedian su máximo volumen a mitad de semana (Miércoles con $$392$$ viajes y Jueves con $$389$$), descendiendo significativamente durante los fines de semana hasta alcanzar su punto mínimo los domingos ($$210$$ viajes de promedio). Esto sugiere un perfil de movilidad fuertemente corporativo y asociado a jornadas laborales de oficina.
+2.  **Estacionalidad Mensual (Mes):** Mayo, Octubre, Noviembre y Diciembre representan los periodos más productivos del año (superando los $$365$$ viajes promedio diarios), mientras que Julio y Agosto reflejan valles de baja afluencia por debajo de los $$250$$ viajes.
 3.  **Mapa de Calor Cruzado (Mes × Día):** El heatmap confirma la estabilidad temporal del comportamiento semanal. Sin importar el mes del año, los días laborables (especialmente martes a jueves) se mantienen en coloraciones oscuras de alta demanda, mientras que los fines de semana en verano (Julio y Agosto) constituyen los periodos de menor actividad operativa global de la red.
 
 ### 3.3 Prueba de Estacionariedad (ADF)
 
-Para evaluar rigurosamente la estabilidad temporal antes del modelado, se aplicó la prueba de Dickey-Fuller Aumentada (ADF):
+Para evaluar rigurosamente la estabilidad temporal de los datos antes de proceder con el modelamiento predictivo, se aplicó la prueba de Dickey-Fuller Aumentada (ADF). Este paso es de vital importancia en el análisis de series de tiempo, ya que la mayoría de los algoritmos de aprendizaje supervisado asumen que las propiedades estadísticas subyacentes de la serie (como su media, varianza y estructura de autocorrelación) se mantienen constantes a lo largo del tiempo. Si las series presentaran tendencias o variaciones descontroladas (no estacionariedad), el modelo aprendería patrones temporales efímeros que no se generalizarían correctamente al futuro, destruyendo la capacidad predictiva del sistema en producción.
+
+El test ADF evalúa formalmente la presencia de una raíz unitaria mediante la siguiente formulación matemática:
 
 <div align="center" markdown="1">
 
@@ -127,25 +129,31 @@ $$\Delta y_t = \alpha + \beta t + \gamma y_{t-1} + \sum_{i=1}^{p} \delta_i \Delt
 *Ecuación 4. Formulación matemática de la prueba de Dickey-Fuller Aumentada*
 </div>
 
-Los resultados del test ADF sobre las series seleccionadas arrojaron p-valores consistentemente por debajo del umbral de significancia del $0.05$ (rechazando la hipótesis nula de raíz unitaria $H_0$). Esto confirma que las series agregadas a nivel de conteo diario por ruta presentan estacionariedad estadística intrínseca, lo cual facilita la convergencia de modelos predictivos y el aprendizaje supervisado sin requerir transformaciones severas de diferenciación acumulada.
+El hallazgo más relevante de esta validación estadística fue que **la totalidad de las 20 rutas origen-destino seleccionadas resultaron ser estrictamente estacionarias** en su estado original. Los p-valores de la prueba se situaron consistentemente muy por debajo del umbral crítico de significancia de $$0.05$$, lo que permitió rechazar categóricamente la hipótesis nula de raíz unitaria ($$H_0$$) para cada una de las series individuales de la red. 
 
+Este resultado es sumamente valioso para la viabilidad técnica del proyecto: al confirmar que todas las rutas son estacionarias de manera intrínseca (debido a que los datos representan flujos consolidados de movilidad urbana sin tendencias explosivas a largo plazo), se elimina la necesidad de aplicar transformaciones de diferenciación regular ($\Delta y_t = y_t - y_{t-1}$). Esto simplifica drásticamente el flujo de trabajo, previene la pérdida de varianza útil de la serie y facilita una des-normalización directa de las predicciones recursivas en el aplicativo web sin necesidad de integrar complejos procesos de acumulación matemática inversa.
 
 ## 4. Desarrollo de los Modelos
 
-Para capturar las dependencias temporales no lineales en las series de demanda, se entrenaron tres modelos bajo un esquema global (un único modelo para todas las rutas simultáneamente):
+Para capturar las dependencias temporales no lineales en las series de demanda, se entrenaron tres modelos bajo un esquema global (un único modelo para todas las rutas simultáneamente). 
+
+La decisión de adoptar un **esquema global** en lugar de entrenar 20 modelos individuales responde a la necesidad de optimizar el mantenimiento del sistema en producción. Al agrupar las rutas en un solo estimador, este puede asimilar dinámicas de comportamiento compartidas en toda la red vial de Nueva York, reduciendo drásticamente la carga de cómputo y previniendo el sobreajuste que sufrirían modelos individuales expuestos a series de datos más cortas.
 
 **Configuración del conjunto de features:**  
 El vector de entrada a cada modelo incluye: `dow`, `month`, `week`, `day_of_year`, `is_holiday`, `is_weekend`, `lag_1`, `lag_7`, `lag_14`, `lag_30`, `rolling_7_mean`, `rolling_7_std`, y las columnas de One-Hot Encoding de rutas.
 
-**División temporal:** 80% para entrenamiento (2023–2024 aprox.) y 20% para prueba (2025 aprox.), respetando el orden cronológico.
+**División temporal:** 80% para entrenamiento (2023–2024 aprox.) y 20% para prueba (2025 aprox.), respetando el orden cronológico estricto para simular de forma realista un escenario de producción donde el modelo solo puede predecir el futuro utilizando información del pasado.
 
 **Modelos entrenados:**
 
-*   **Regresión Lineal con Regularización (Ridge):** Modelo de línea base lineal con penalización L2 ($\alpha = 10$) y estandarización de features mediante `StandardScaler`.
-*   **Random Forest:** Ensamble de 100 árboles de decisión con profundidad máxima de 10 y mínimo de 4 muestras por hoja.
-*   **XGBoost (Gradient Boosting):** 150 estimadores, profundidad máxima de 6, tasa de aprendizaje $\eta = 0.05$, con submuestreo de filas y columnas de 0.8.
+*   **Regresión Lineal con Regularización (Ridge):** Se seleccionó este algoritmo para actuar como nuestro modelo de referencia (*baseline*). Su inclusión es indispensable para cuantificar con precisión el verdadero valor agregado por los algoritmos no lineales más complejos. Se configuró con penalización L2 ($$\alpha = 10$$) y estandarización mediante `StandardScaler` para mitigar el riesgo de multicolinealidad entre los rezagos temporales altamente correlacionados (como `lag_7` y `rolling_7_mean`), garantizando estimaciones de coeficientes estables.
+*   **Random Forest:** Se eligió este ensamble de árboles basados en embolsado (*bagging*) por su robustez ante valores atípicos y su capacidad natural para capturar interacciones no lineales entre las variables del calendario y los rezagos. Al limitar la profundidad máxima a 10 y exigir un mínimo de 4 muestras por hoja, obligamos al modelo a aprender umbrales de decisión generalizables (por ejemplo, el impacto de un lunes festivo) en lugar de memorizar el ruido específico del set de entrenamiento.
+*   **XGBoost (Gradient Boosting):** Se incorporó como el modelo candidato de alto rendimiento debido a su estado del arte en datos tabulares y su estrategia de optimización basada en el descenso de gradiente secuencial (donde cada nuevo árbol corrige de forma dirigida los errores cometidos por los anteriores). Para asegurar una convergencia suave y evitar el sobreajuste ante fluctuaciones estocásticas de la demanda, se configuró con una tasa de aprendizaje baja ($$\eta = 0.05$$), 150 estimadores y un submuestreo del 80% en filas y columnas que induce aleatoriedad y diversidad en las subdivisiones de los árboles.
 
+Aunque las Redes Neuronales Recurrentes como las **LSTM (Long Short-Term Memory)** son arquitecturas potentes para modelar secuencias temporales crudas, su implementación en este escenario específico se descartó bajo el principio de parsimonia por las siguientes razones:
 
+1.  **Naturaleza Tabular del Problema:** Al estructurar explícitamente la serie temporal mediante ingeniería de datos (creando variables de rezago, medias móviles, desviaciones estándar y variables de calendario exógenas), transformamos con éxito el problema en una tarea de aprendizaje supervisado sobre datos tabulares estructurados. En este dominio, los algoritmos basados en árboles de decisión (especialmente XGBoost) igualan o superan consistentemente el rendimiento de las redes profundas, pero con una fracción del esfuerzo de cómputo.
+2.  **Costo de Mantenimiento y Despliegue:** Una red LSTM requiere mayor potencia de cómputo para entrenamiento, hiperparametrización y ejecución en producción. Además, son altamente sensibles al desvanecimiento o explosión del gradiente y propensas al sobreajuste en presencia de datos con ruido estocástico diario. Implementar una LSTM habría introducido una complejidad de infraestructura desproporcionada en la herramienta web final, sin garantizar una ganancia estadística significativa frente a la robustez y velocidad de inferencia de XGBoost.
 
 ## 5. Comparación de Modelos y Métricas
 
@@ -180,8 +188,8 @@ Los resultados agregados ponderados sobre todas las rutas e identidades origen-d
 </div>
 
 Como se detalla cuantitativamente en la **Tabla 2** y en los gráficos comparativos de la **Figura 3**:
-*   La regresión lineal con penalización L2 (Ridge) arrojó un desempeño deficiente frente a los ensambles de árboles de decisión ($R^2 = 0.564$). Esto evidencia que los modelos lineales sufren de subajuste ante patrones complejos de estacionalidad estocástica cruzada.
-*   **XGBoost demostró ser el modelo campeón** para la serie, obteniendo el menor error absoluto medio (**$38.8$ viajes**) y un coeficiente de determinación sobresaliente de **$0.754$**. Esto significa que el modelo captura el **75.4% de la varianza** presente en la demanda agregada diaria de las 20 rutas de prueba del año 2025.
+*   La regresión lineal con penalización L2 (Ridge) arrojó un desempeño deficiente frente a los ensambles de árboles de decisión ($$R^2 = 0.564$$). Esto evidencia que los modelos lineales sufren de subajuste ante patrones complejos de estacionalidad estocástica cruzada.
+*   **XGBoost demostró ser el modelo campeón** para la serie, obteniendo el menor error absoluto medio (**$$38.8$$ viajes**) y un coeficiente de determinación sobresaliente de **$$0.754$$**. Esto significa que el modelo captura el **75.4% de la varianza** presente en la demanda agregada diaria de las 20 rutas de prueba del año 2025.
 
 ### 5.1 Desempeño Gráfico de Inferencia en Test
 
@@ -197,7 +205,7 @@ El comportamiento dinámico observado en la **Figura 4** revela que el modelo de
 
 ## 6. Predicción Final: Próximos 30 Días
 
-Con el modelo XGBoost seleccionado como campeón, se generó una proyección para **enero 2026** (30 días de horizonte) para las rutas prioritarias del sistema. El pronóstico se ejecutó bajo una estrategia **multi-paso recursiva**, donde el modelo utiliza su propia salida del día anterior ($t-1$) para recalcular de manera iterativa los componentes rezagados de los días subsiguientes.
+Con el modelo XGBoost seleccionado como campeón, se generó una proyección para **enero 2026** (30 días de horizonte) para las rutas prioritarias del sistema. El pronóstico se ejecutó bajo una estrategia **multi-paso recursiva**, donde el modelo utiliza su propia salida del día anterior ($$t-1$$) para recalcular de manera iterativa los componentes rezagados de los días subsiguientes.
 
 <div style="text-align: center;">
     <img src="https://github.com/jihernandezc/rnaab_sistema_integrado/blob/main/output/modulo1/05_forecast.png?raw=true" width="100%" alt="Pronóstico de Demanda a 30 Días" />

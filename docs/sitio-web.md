@@ -3,13 +3,14 @@
 
 <div style="position: sticky; top: 0; background-color: white; padding: 10px 0; border-bottom: 1px solid #ddd; z-index: 999; text-align: center; width: 100%;">
   <a href="index.html" style="text-decoration: none;">🏠 <b>Inicio</b></a> | 
-  <a href="prediccion.html" style="text-decoration: none;">📈 <b>Módulo 1: Demanda</b></a> |
-  <a href="clasificacion.html" style="text-decoration: none;">📸 <b>Módulo 2: Conducción</b></a> | 
-  <a href="recomendacion.html" style="text-decoration: none;">🗺️ <b>Módulo 3: Recomendación</b></a> | 
+  <a href="prediccion.html" style="text-decoration: none;">📈 <b>Predicción</b></a> |
+  <a href="clasificacion.html" style="text-decoration: none;">📸 <b>Clasificación</b></a> | 
+  <a href="recomendacion.html" style="text-decoration: none;">🗺️ <b>Recomendación</b></a> | 
   <a href="herramienta-web.html" style="text-decoration: none;">🌐 <b>Sitio Web</b></a>
 </div>
 
 <br>
+
 # Sitio Web Interactivo y Video Promocional
 
 Para facilitar el uso de nuestro modelo de riesgo crediticio, desarrollamos un sitio web interactivo que permite a los usuarios ingresar sus datos financieros y recibir una evaluación personalizada de su riesgo crediticio. Además, creamos un video promocional que resume el proyecto y destaca su relevancia en el sector financiero.

@@ -78,13 +78,13 @@ El desarrollo del proyecto se rige por un enfoque metodológico estructurado en 
 
 Utilice los siguientes enlaces para explorar detalladamente el desarrollo técnico, los resultados y las conclusiones de cada componente de la investigación:
 
-📊 [**Módulo 1: Predicción de Demanda (Series de Tiempo)**](prediccion.md)  
+📊 [**Módulo 1: Predicción de Demanda**](prediccion.md)  
 * *Análisis de tendencias temporales, preprocesamiento de secuencias, entrenamiento del modelo y predicciones a 30 días.*
 
-📸 [**Módulo 2: Clasificación de Conducción Distractiva (Imágenes)**](clasificacion.md)  
+📸 [**Módulo 2: Clasificación de Conducción Distractiva**](clasificacion.md)  
 * *Arquitecturas CNN utilizadas, análisis de métricas de clasificación en cabina y evaluación de casos de error.*
 
-🗺️ [**Módulo 3: Sistema de Recomendación de Destinos**](recomendacion.md)  
+🗺️ [**Módulo 3: Recomendación de Destinos**](recomendacion.md)  
 * *Desarrollo de algoritmos de recomendación híbridos y análisis de efectividad de las sugerencias de viaje.*
 
 🌐 [**Herramienta e Interfaz Web**](herramienta-web.md)  

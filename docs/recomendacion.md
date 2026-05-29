@@ -3,30 +3,23 @@
 
 <div style="position: sticky; top: 0; background-color: white; padding: 10px 0; border-bottom: 1px solid #ddd; z-index: 999; text-align: center; width: 100%;">
   <a href="index.html" style="text-decoration: none;">🏠 <b>Inicio</b></a> | 
-  <a href="prediccion.html" style="text-decoration: none;">📈 <b>Módulo 1: Demanda</b></a> |
-  <a href="clasificacion.html" style="text-decoration: none;">📸 <b>Módulo 2: Conducción</b></a> | 
-  <a href="recomendacion.html" style="text-decoration: none;">🗺️ <b>Módulo 3: Recomendación</b></a> | 
+  <a href="prediccion.html" style="text-decoration: none;">📈 <b>Predicción</b></a> |
+  <a href="clasificacion.html" style="text-decoration: none;">📸 <b>Clasificación</b></a> | 
+  <a href="recomendacion.html" style="text-decoration: none;">🗺️ <b>Recomendación</b></a> | 
   <a href="herramienta-web.html" style="text-decoration: none;">🌐 <b>Sitio Web</b></a>
 </div>
 
 <br>
 
-# Módulo 3: Sistema Inteligente de Recomendación de Destinos Turísticos (Neural CF Híbrido)
+# Módulo 3: Recomendación de Destinos de Viaje
 
-Este módulo presenta el diseño, entrenamiento y evaluación de un motor de recomendación personalizado basado en una **Red Neuronal Híbrida de Filtrado Colaborativo (NCF)**. El objetivo es sugerir destinos de viaje a los clientes combinando su comportamiento histórico con su perfil demográfico y sus preferencias personales.
+## Descripción del Problema
 
----
+El sector turístico moderno se enfrenta al reto de la sobrecarga de información: los usuarios disponen de miles de opciones de viaje, pero carecen del tiempo para filtrarlas de manera manual. Los sistemas de recomendación tradicionales, basados únicamente en filtrado colaborativo, son incapaces de recomendar a usuarios nuevos sin historial de viajes e ignoran por completo los metadatos de contexto del cliente, como el tamaño del grupo familiar o sus preferencias explícitas de registro. Por otro lado, los sistemas basados únicamente en contenido no logran asimilar las interacciones cruzadas complejas entre diferentes perfiles de usuarios.
 
-## Descripción del Módulo
+### Objetivo
 
-El motor de recomendación se construyó en cuatro etapas:
-
-1. **Análisis Exploratorio de Datos (EDA):** Entendimiento profundo del catálogo de destinos, el comportamiento de calificación de los usuarios y su perfil demográfico.
-2. **Red Neuronal Híbrida (Neural CF):** Arquitectura basada en capas de *Embeddings* para usuarios y destinos, conectadas a un Perceptrón Multicapa (MLP) que incorpora variables de contexto demográfico.
-3. **Evaluación comparativa** de tres arquitecturas usando métricas continuas (MAE, RMSE) y binarias (Precisión, Recall, F1-Score).
-4. **Productivización** del modelo seleccionado para integración en la herramienta web del proyecto.
-
----
+Diseñar, entrenar y evaluar un motor de recomendación híbrido basado en **Redes Neuronales de Filtrado Colaborativo (NCF)** que combine el comportamiento histórico de calificaciones de los usuarios del [*Travel Recommendation Dataset* de Kaggle](https://www.kaggle.com/datasets/ranadeep/credit-risk-dataset/data) con sus metadatos contextuales (género, tamaño del grupo de viaje y preferencias temáticas explícitas). El sistema debe predecir la calificación estimada (de 1 a 5 estrellas) que un usuario le asignaría a un destino aún no visitado, permitiendo generar un **Top-3 de recomendaciones personalizado** para optimizar la toma de decisiones comerciales y mejorar la fidelización del cliente.
 
 ## 1. Análisis Exploratorio de Datos
 
@@ -81,7 +74,7 @@ Este contraste demuestra por qué el modelo no puede basarse únicamente en las 
 El último bloque del EDA estudia quiénes son los usuarios del sistema y qué buscan, información que el modelo híbrido incorpora como variables de contexto.
 
 <div style="text-align: center;">
-  <img src="https://github.com/jihernandezc/rnaab_sistema_integrado/blob/main/output/modulo3/05_preferencias.png?raw=true" width="100%" alt="Preferencias Explícitas y Distribución de Género"/>
+  <img src="https://github.com/jihernandezc/rnaab_sistema_integrado/blob/main/output/modulo3/05_analisis_usuarios.png?raw=true" width="100%" alt="Preferencias Explícitas y Distribución de Género"/>
   <p><em>Figura 5. Preferencias explícitas declaradas por los usuarios (izquierda) y distribución de género (derecha)</em></p>
 </div>
 
@@ -92,19 +85,19 @@ Dos patrones estructurales definen el perfil de los usuarios:
 
 Adicionalmente, con un promedio de **1.5 adultos y casi 1 niño por usuario**, se identifica un perfil de viaje predominantemente familiar, lo que refuerza la decisión de incluir el tamaño del grupo (`Total_Travelers`) como variable de contexto del modelo.
 
----
+
 
 ## 2. Justificación de la Arquitectura
 
-**¿Por qué un enfoque híbrido?** Los datos combinan interacciones usuario–destino (calificaciones de reviews e historial) con metadatos contextuales (género, tamaño del grupo, preferencias). Un algoritmo de filtrado colaborativo tradicional ignoraría el contexto demográfico; el enfoque híbrido cruza el comportamiento histórico con el perfil real del cliente para una personalización más precisa.
+Para abordar de manera óptima este escenario de datos, se optó por una arquitectura de **Filtrado Colaborativo Neuronal (Neural CF) Híbrido** implementada en PyTorch. Los algoritmos clásicos de factorización de matrices son incapaces de asimilar variables no lineales o incorporar metadatos de contexto demográfico de los usuarios, limitándose únicamente a la matriz de interacciones vacía. Al utilizar una red neuronal híbrida, podemos proyectar las identidades a espacios densos de baja dimensión (*embeddings*) y cruzar esa información con el perfil demográfico real del cliente en una sola etapa de aprendizaje.
 
-**Arquitectura general (Neural CF Híbrida):**
+La formulación matemática que rige la predicción de la calificación estimada para el par de usuario $$u$$ y destino $$d$$ se describe a continuación:
 
 <div align="center" markdown="1">
 
 $$\hat{r}_{u,d} = \sigma\!\left(\text{MLP}\bigl([\mathbf{e}_u \;\|\; \mathbf{e}_d \;\|\; \mathbf{c}_u]\bigr)\right) \times 5.0$$
 
-*Ecuación 1. Predicción de calificación: concatenación de embeddings de usuario* ($\mathbf{e}_u$)*, destino* ($\mathbf{e}_d$) *y contexto* ($\mathbf{c}_u$)*, escalada al rango [0, 5]*
+*Ecuación 1. Predicción de calificación: concatenación de embeddings de usuario* ($$\mathbf{e}_u$$)*, destino* ($$\mathbf{e}_d$$) *y contexto* ($$\mathbf{c}_u$$)*, escalada al rango [0, 5]*
 </div>
 
 - **Embeddings:** Traducen los IDs de usuarios y destinos en vectores densos que capturan gustos y afinidades abstractas no observables directamente en los datos crudos.
@@ -119,16 +112,15 @@ $$\hat{r}_{u,d} = \sigma\!\left(\text{MLP}\bigl([\mathbf{e}_u \;\|\; \mathbf{e}_
 *Tabla 1. Comparativa de arquitecturas evaluadas*
 
 | Arquitectura | Embedding | Capas MLP | Dropout | Weight Decay | LR |
-| :--- | :---: | :--- | :---: | :---: | :---: |
-| **Modelo Base** | 16 | 64 → 32 | 0.2 | $10^{-5}$ | 0.005 |
-| **Modelo Profundo** | 32 | 128 → 64 → 32 | 0.2 | $10^{-5}$ | 0.003 |
-| **Modelo Regularizado** | 16 | 32 → 16 | **0.4** | $\mathbf{10^{-4}}$ | 0.005 |
+| **Modelo Base** | 16 | 64 → 32 | 0.2 | $$10^{-5}$$ | 0.005 |
+| **Modelo Profundo** | 32 | 128 → 64 → 32 | 0.2 | $$10^{-5}$$ | 0.003 |
+| **Modelo Regularizado** | 16 | 32 → 16 | **0.4** | $$\mathbf{10^{-4}}$$ | 0.005 |
 
 </div>
 
 El **Modelo Base** establece la línea base con la arquitectura más simple. El **Modelo Profundo** amplía la capacidad representacional para buscar patrones más abstractos. El **Modelo Regularizado** reduce el tamaño de las capas e incrementa agresivamente el Dropout y la penalización por peso, obligando a la red a generalizar en lugar de memorizar.
 
----
+
 
 ## 3. Preparación de los Datos
 
@@ -141,7 +133,6 @@ El **Modelo Base** establece la línea base con la arquitectura más simple. El 
 
 **División:** 80% entrenamiento / 20% prueba, con DataLoaders de `batch_size = 64`. La función de pérdida es **MSELoss** y el optimizador es **Adam** en los tres experimentos.
 
----
 
 ## 4. Evaluación de los Modelos
 
@@ -170,38 +161,160 @@ $$\text{Precisión} = \frac{TP}{TP+FP} \qquad \text{Recall} = \frac{TP}{TP+FN} \
 *Tabla 2. Comparativa de métricas entre arquitecturas (set de prueba)*
 
 | Arquitectura | MAE | RMSE | Precisión | Recall | F1-Score |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| **Modelo Base** | ~1.53 | — | — | — | — |
-| **Modelo Profundo** | ~1.43 | — | — | — | — |
-| **Modelo Regularizado** | ~1.43 | — | **58–61%** | **~51%** | **~0.518** |
+| **Modelo Base** | ~1.53 | ~1.85| ~0.56 | ~0.42 | ~0.48 |
+| **Modelo Profundo** | ~1.4 | ~1.74 | ~0.56 | ~0.47 | ~0.51 |
+| **Modelo Regularizado** | ~1.46 | ~1.78 | ~0.58 | ~0.47 | ~0.52 |
 
 </div>
 
-**Modelo seleccionado: Modelo Regularizado.** Dado que el dataset es reducido (1,000 filas), las arquitecturas más complejas tendieron a memorizar el ruido muestral. El Modelo Regularizado —gracias al Dropout del 40% y la penalización por peso más alta ($10^{-4}$)— controló el sobreajuste y aprendió patrones generales con mayor capacidad de generalización. En términos comerciales: de cada 10 destinos recomendados, aproximadamente **6 son un acierto real** para el usuario.
+*   **Error Continuo:** El Modelo Profundo y el Modelo Regularizado empatan estrechamente en el error absoluto de predicción, alcanzando un MAE de **1.43 estrellas**, superando con claridad al Modelo Base (~1.53).
+*   **Métricas de Recomendación (Binarias):** El **Modelo Regularizado se consolida como el modelo campeón**. Logra una precisión binaria superior al **58%**, lo cual significa que de cada 10 destinos que el motor sugiere activamente, aproximadamente **6 corresponden a elecciones realmente satisfactorias** para el perfil del usuario. Asimismo, alcanza el F1-Score más alto (~0.518), logrando el mejor balance entre sugerencias relevantes encontradas y precisión del catálogo recomendado.
+*   **Justificación del Fenómeno:** Al contar con un dataset de tamaño acotado (1,000 interacciones únicas), las arquitecturas con alta capacidad representacional (como el Modelo Profundo con embeddings de 32 y tres capas densas) sufren severamente de sobreajuste, memorizando el ruido de la muestra. El Modelo Regularizado, al simplificar el número de neuronas e incorporar una tasa de Dropout agresiva del **40%** junto con una penalización L2 diez veces mayor ($$10^{-4}$$), actúa como un regularizador eficaz que fuerza a la red a generalizar las fronteras de decisión, resultando en proyecciones mucho más estables y útiles en el conjunto de prueba.
 
----
 
 ## 5. Ejemplos de Recomendaciones Generadas
 
 El motor opera en tres pasos para cada usuario:
-
 1. Identifica los destinos que el usuario **aún no ha visitado**.
 2. Calcula la calificación predicha para cada candidato con el Modelo Regularizado.
-3. Ordena de mayor a menor y entrega el **Top-3 personalizado**, incluyendo nombre del atractivo, ubicación, calificación sugerida, mejor época para visitar e índice de popularidad.
+3. Ordena de mayor a menor y entrega el **Top-3 personalizado**.
 
----
+Para ilustrar el comportamiento práctico del filtrado híbrido contextual, se presentan los reportes de recomendación generados para dos perfiles con intereses y estructuras familiares distintas.
 
-## 6. Conclusiones
+### 👤 Reporte para el Cliente: 976
+*   **Preferencias de registro:** *Beaches, Historical*
+*   **Acompañantes en el viaje:** 2 personas (Perfil familiar o grupal intermedio)
 
-Los gustos de los viajeros responden a múltiples factores simultáneos: intereses personales (historia, playa, aventura, naturaleza, ciudad), tamaño del grupo y perfil demográfico. Este proyecto demostró que un sistema de recomendación útil debe ir más allá de la popularidad agregada y aprender del comportamiento real de cada usuario.
+<div style="display: flex; gap: 15px; flex-wrap: wrap; margin: 20px 0; font-family: -apple-system, sans-serif;">
+
+  <!-- Card 1 -->
+  <div style="flex: 1; min-width: 280px; background: white; border-radius: 12px; border: 1px solid #e1e8ed; box-shadow: 0 4px 10px rgba(0,0,0,0.05); padding: 20px; position: relative;">
+    <div style="position: absolute; top: 15px; right: 15px; background: #e8f5e9; color: #2e7d32; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold;">Top 1 - Nature</div>
+    <h4 style="margin: 0 0 5px 0; color: #1f425c; font-size: 18px;">Kerala Backwaters</h4>
+    <p style="margin: 0 0 15px 0; color: #7f8c8d; font-size: 13px;">📍 Ubicación: Kerala</p>
+    <div style="background: #f8f9fa; border-radius: 8px; padding: 12px; font-size: 13px; margin-bottom: 15px;">
+      <div style="margin-bottom: 5px;">📅 <b>Época ideal:</b> Sep-Mar</div>
+      <div>📈 <b>Popularidad:</b> 7.98 / 10.0</div>
+    </div>
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+      <span style="color: #f39c12; font-size: 16px;">★★★★☆ <span style="color: #7f8c8d; font-size: 12px;">(4/5)</span></span>
+      <span style="font-size: 11px; color: #95a5a6; font-style: italic;">Score IA: 4.02</span>
+    </div>
+  </div>
+
+  <!-- Card 2 -->
+  <div style="flex: 1; min-width: 280px; background: white; border-radius: 12px; border: 1px solid #e1e8ed; box-shadow: 0 4px 10px rgba(0,0,0,0.05); padding: 20px; position: relative;">
+    <div style="position: absolute; top: 15px; right: 15px; background: #e3f2fd; color: #1565c0; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold;">Top 2 - Historical</div>
+    <h4 style="margin: 0 0 5px 0; color: #1f425c; font-size: 18px;">Taj Mahal</h4>
+    <p style="margin: 0 0 15px 0; color: #7f8c8d; font-size: 13px;">📍 Ubicación: Uttar Pradesh</p>
+    <div style="background: #f8f9fa; border-radius: 8px; padding: 12px; font-size: 13px; margin-bottom: 15px;">
+      <div style="margin-bottom: 5px;">📅 <b>Época ideal:</b> Nov-Feb</div>
+      <div>📈 <b>Popularidad:</b> 8.69 / 10.0</div>
+    </div>
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+      <span style="color: #f39c12; font-size: 16px;">★★★★☆ <span style="color: #7f8c8d; font-size: 12px;">(4/5)</span></span>
+      <span style="font-size: 11px; color: #95a5a6; font-style: italic;">Score IA: 3.81</span>
+    </div>
+  </div>
+
+  <!-- Card 3 -->
+  <div style="flex: 1; min-width: 280px; background: white; border-radius: 12px; border: 1px solid #e1e8ed; box-shadow: 0 4px 10px rgba(0,0,0,0.05); padding: 20px; position: relative;">
+    <div style="position: absolute; top: 15px; right: 15px; background: #f3e5f5; color: #6a1b9a; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold;">Top 3 - City</div>
+    <h4 style="margin: 0 0 5px 0; color: #1f425c; font-size: 18px;">Jaipur City</h4>
+    <p style="margin: 0 0 15px 0; color: #7f8c8d; font-size: 13px;">📍 Ubicación: Rajasthan</p>
+    <div style="background: #f8f9fa; border-radius: 8px; padding: 12px; font-size: 13px; margin-bottom: 15px;">
+      <div style="margin-bottom: 5px;">📅 <b>Época ideal:</b> Oct-Mar</div>
+      <div>📈 <b>Popularidad:</b> 9.23 / 10.0</div>
+    </div>
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+      <span style="color: #f39c12; font-size: 16px;">★★★★☆ <span style="color: #7f8c8d; font-size: 12px;">(4/5)</span></span>
+      <span style="font-size: 11px; color: #95a5a6; font-style: italic;">Score IA: 3.75</span>
+    </div>
+  </div>
+
+</div>
+
+### 👤 Reporte para el Cliente: 977
+*   **Preferencias de registro:** *Nature, Adventure*
+*   **Acompañantes en el viaje:** 2 personas (Perfil familiar o grupal intermedio)
+
+<div style="display: flex; gap: 15px; flex-wrap: wrap; margin: 20px 0; font-family: -apple-system, sans-serif;">
+
+  <!-- Card 1 -->
+  <div style="flex: 1; min-width: 280px; background: white; border-radius: 12px; border: 1px solid #e1e8ed; box-shadow: 0 4px 10px rgba(0,0,0,0.05); padding: 20px; position: relative;">
+    <div style="position: absolute; top: 15px; right: 15px; background: #fff3e0; color: #e65100; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold;">Top 1 - Adventure</div>
+    <h4 style="margin: 0 0 5px 0; color: #1f425c; font-size: 18px;">Leh Ladakh</h4>
+    <p style="margin: 0 0 15px 0; color: #7f8c8d; font-size: 13px;">📍 Ubicación: Jammu and Kashmir</p>
+    <div style="background: #f8f9fa; border-radius: 8px; padding: 12px; font-size: 13px; margin-bottom: 15px;">
+      <div style="margin-bottom: 5px;">📅 <b>Época ideal:</b> Apr-Jun</div>
+      <div>📈 <b>Popularidad:</b> 8.40 / 10.0</div>
+    </div>
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+      <span style="color: #f39c12; font-size: 16px;">★★★★☆ <span style="color: #7f8c8d; font-size: 12px;">(4/5)</span></span>
+      <span style="font-size: 11px; color: #95a5a6; font-style: italic;">Score IA: 4.38</span>
+    </div>
+  </div>
+
+  <!-- Card 2 -->
+  <div style="flex: 1; min-width: 280px; background: white; border-radius: 12px; border: 1px solid #e1e8ed; box-shadow: 0 4px 10px rgba(0,0,0,0.05); padding: 20px; position: relative;">
+    <div style="position: absolute; top: 15px; right: 15px; background: #e8f5e9; color: #2e7d32; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold;">Top 2 - Nature</div>
+    <h4 style="margin: 0 0 5px 0; color: #1f425c; font-size: 18px;">Kerala Backwaters</h4>
+    <p style="margin: 0 0 15px 0; color: #7f8c8d; font-size: 13px;">📍 Ubicación: Kerala</p>
+    <div style="background: #f8f9fa; border-radius: 8px; padding: 12px; font-size: 13px; margin-bottom: 15px;">
+      <div style="margin-bottom: 5px;">📅 <b>Época ideal:</b> Sep-Mar</div>
+      <div>📈 <b>Popularidad:</b> 7.98 / 10.0</div>
+    </div>
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+      <span style="color: #f39c12; font-size: 16px;">★★★★☆ <span style="color: #7f8c8d; font-size: 12px;">(4/5)</span></span>
+      <span style="font-size: 11px; color: #95a5a6; font-style: italic;">Score IA: 3.76</span>
+    </div>
+  </div>
+
+  <!-- Card 3 -->
+  <div style="flex: 1; min-width: 280px; background: white; border-radius: 12px; border: 1px solid #e1e8ed; box-shadow: 0 4px 10px rgba(0,0,0,0.05); padding: 20px; position: relative;">
+    <div style="position: absolute; top: 15px; right: 15px; background: #efebe9; color: #4e342e; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold;">Top 3 - Beach</div>
+    <h4 style="margin: 0 0 5px 0; color: #1f425c; font-size: 18px;">Goa Beaches</h4>
+    <p style="margin: 0 0 15px 0; color: #7f8c8d; font-size: 13px;">📍 Ubicación: Goa</p>
+    <div style="background: #f8f9fa; border-radius: 8px; padding: 12px; font-size: 13px; margin-bottom: 15px;">
+      <div style="margin-bottom: 5px;">📅 <b>Época ideal:</b> Nov-Mar</div>
+      <div>📈 <b>Popularidad:</b> 8.61 / 10.0</div>
+    </div>
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+      <span style="color: #f39c12; font-size: 16px;">★★★☆☆ <span style="color: #7f8c8d; font-size: 12px;">(3/5)</span></span>
+      <span style="font-size: 11px; color: #95a5a6; font-style: italic;">Score IA: 3.00</span>
+    </div>
+  </div>
+
+</div>
+
+### Análisis del Comportamiento Híbrido
+La comparación de ambos perfiles proporciona una demostración del funcionamiento del modelo:
+*   Para el **Cliente 976**, cuyas preferencias explícitas son *Beaches* e *Historical*, el sistema situó en segundo lugar al *Taj Mahal* (categoría *Historical*, con un score estimado de **3.81**). No obstante, priorizó a *Kerala Backwaters* (categoría *Nature*, con **4.02**) debido a las interacciones implícitas de usuarios similares y la alta coincidencia en el tamaño del grupo familiar, lo que demuestra que la red no se limita a un simple mapeo de palabras clave, sino que cruza el contexto real con la densidad de la matriz de filtrado.
+*   Para el **Cliente 977**, interesado en *Nature* y *Adventure*, el sistema recomendó en primer lugar y con la mayor certidumbre de clasificación a *Leh Ladakh* (categoría *Adventure*, con un score estimado de **4.38**), seguido de *Kerala Backwaters* (categoría *Nature*, con **3.76**). De esta forma, el modelo es capaz de reconfigurar de manera dinámica las sugerencias según la firma contextual de entrada del usuario.
+
+## 6. Aspectos Éticos y Responsabilidad Algorítmica
+
+El desarrollo y despliegue de sistemas de recomendación en el ámbito turístico implica responsabilidades éticas fundamentales que van más allá del rendimiento puramente matemático del modelo:
+
+### 6.1 Cámaras de Eco Algorítmicas (*Filter Bubbles*)
+Un riesgo común en el filtrado colaborativo es la sobre-especialización: si un usuario muestra un interés inicial en destinos históricos, el algoritmo puede tender a recomendar únicamente templos o monumentos, limitando su horizonte cultural. Nuestro enfoque híbrido mitiga parcialmente este efecto al combinar embeddings latentes con variables de contexto, asegurando una "serendipia controlada" que permite sugerir destinos de naturaleza o playas (como se observó en el caso del usuario 976) si perfiles sociodemográficos similares tuvieron experiencias satisfactorias allí.
+
+### 6.2 Sobreturismo y Sostenibilidad Territorial
+Recomendar de manera indiscriminada los destinos de mayor popularidad global (como el *Taj Mahal*) puede agudizar problemas de sobreturismo (*overtourism*), impactando negativamente la infraestructura local, el medio ambiente y la calidad de vida de las comunidades residentes. El uso de un recomendador inteligente permite a la agencia promover destinos secundarios con menor densidad histórica pero con altas proyecciones de satisfacción (como *Kerala Backwaters*), distribuyendo el flujo de turistas de forma equilibrada y fomentando un modelo de negocio de turismo sostenible.
+
+### 6.3 Privacidad de los Datos del Perfil
+El modelo requiere datos personales como género, preferencias de ocio e información de acompañantes (incluyendo menores de edad en el conteo de niños). Para asegurar el cumplimiento de estándares éticos de privacidad, el sistema debe implementar técnicas de anonimización en la base de datos de producción, absteniéndose de asociar de forma directa nombres o identificaciones reales con las entradas del modelo, y limitando el procesamiento de características contextuales estrictamente a los índices mapeados durante la inferencia local.
+
+## 7. Conclusiones
+
+Los gustos de los de viajeros responden a múltiples factores simultáneos: intereses personales (historia, playa, aventura, naturaleza, ciudad), tamaño del grupo y perfil demográfico. Este proyecto demostró que un sistema de recomendación útil debe ir más allá de la popularidad agregada y aprender del comportamiento real de cada usuario.
 
 El hallazgo más importante del EDA fue el contraste entre las reviews públicas (señal optimista, promedio 3.02) y el historial de experiencias reales (señal crítica, promedio 2.90). Fusionar ambas fuentes fue la decisión metodológica más relevante del módulo: sin el historial, el modelo aprendería únicamente del ruido de la opinión pública; sin las reviews, perdería señal de usuarios con pocas interacciones operativas.
 
 Como limitación principal, el catálogo se restringe a **5 destinos del subcontinente indio**, lo que acota la diversidad geográfica del sistema. Una base de datos más amplia y culturalmente variada mejoraría sustancialmente la capacidad de generalización del recomendador y su aplicabilidad a perfiles de usuarios de distintas regiones del mundo.
 
----
 
-## 7. Propuesta de Evaluación de Efectividad Comercial
+## 8. Propuesta de Evaluación de Efectividad Comercial
 
 Como el dataset actual es estático y no existe un entorno en producción, se propone la siguiente estrategia para medir el éxito del recomendador en un escenario real:
 
@@ -213,7 +326,6 @@ Como el dataset actual es estático y no existe un entorno en producción, se pr
 - **Tasa de conversión por ruta:** Monitorear si el volumen de reservas hacia destinos específicos aumenta tras activar el menú personalizado.
 - **Análisis de ocupación:** Al conocer con semanas de anticipación las preferencias de categoría de cada usuario, la agencia puede prever la demanda y negociar reservas de hoteles y transporte en bloque, reduciendo costos operativos.
 
----
 
 ## 8. Bibliografía
 
